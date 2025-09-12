@@ -18,13 +18,21 @@ class AdoptionRequestSeeder extends Seeder
         $owners = User::where('role', 'owner')->get();
         $adoptions = Adoption::all();
 
-        if ($owners->isEmpty() || $adoptions->isEmpty()) {
-            $this->command->warn('⚠️ No owners or adoptions found, skipping adoption_requests seeding.');
-            return;
+        if ($adoptions->isEmpty()) {
+            $shelters = User::where('role', 'shelter')->get();
+            if ($shelters->isEmpty()) {
+                $shelters = User::factory(3)->create(['role' => 'shelter']);
+            }
+            $adoptions = Adoption::factory(3)->create([
+                'shelter_id' => $shelters->random()->id
+            ]);
+        }
+
+        if ($owners->isEmpty()) {
+            $owners = User::factory(10)->create(['role' => 'owner']);
         }
 
         foreach ($adoptions as $adoption) {
-            // Random number of requests per adoption
             $requestsCount = rand(1, 3);
 
             for ($i = 0; $i < $requestsCount; $i++) {

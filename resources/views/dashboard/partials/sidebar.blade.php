@@ -131,10 +131,17 @@
             </li>
 
             {{-- Adoption Requests --}}
-            <li class="menu-item {{ Route::is('adoption-requests.*') ? 'active' : '' }}">
+            <li class="menu-item {{ Route::is('adoption-requests.index') ? 'active' : '' }}">
                 <a href="{{ route('adoption-requests.index') }}" class="menu-link">
                     <i class="menu-icon icon-base bx bx-message-check"></i>
                     <div data-i18n=" Adoption Requests"> Adoption Requests</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Route::is('adoption-requests.history') ? 'active' : '' }}">
+                <a href="{{ route('adoption-requests.history') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-history"></i>
+                    <div data-i18n=" Requests History"> Requests History</div>
                 </a>
             </li>
         @endcan

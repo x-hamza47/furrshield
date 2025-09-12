@@ -33,3 +33,8 @@ Route::get('/vet-slots/{vet}', [AppointmentController::class, 'vetSlots'])->name
 
 Route::resource('dashboard/shelter/adoption', AdoptionController::class);
 Route::resource('dashboard/shelter/adoption-requests', AdoptionRequestController::class);
+
+Route::post('adoption-requests/{id}/approve', [AdoptionRequestController::class, 'approve'])->name('adoption-requests.approve');
+Route::post('adoption-requests/{id}/reject', [AdoptionRequestController::class, 'reject'])->name('adoption-requests.reject');
+
+Route::get('adoption-requests/history', [AdoptionRequestController::class, 'history'])->name('adoption-requests.history');

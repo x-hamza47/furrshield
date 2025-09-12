@@ -17,20 +17,19 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call([
-            // AdminSeeder::class,
-            // ShelterSeeder::class,
-            // VetSeeder::class,
-            // OrderSeeder::class,
-            AppointmentSeeder::class,
-
+            AdminSeeder::class,
+            ShelterSeeder::class,
+            VetSeeder::class,
+            OrderSeeder::class,
+            
         ]);
-        // User::factory(10)->hasPets(3)->create(['role' => 'owner']);
+        User::factory(10)->hasPets(3)->create(['role' => 'owner']);
+        
+        $this->call([
+            AppointmentSeeder::class,
+            AdoptionSeeder::class,
+        ]);
 
-        // $this->call([
-        //     AdoptionSeeder::class,
-
-        // ]);
-
-        // Product::factory(15)->create();
+        Product::factory(15)->create();
     }
 }

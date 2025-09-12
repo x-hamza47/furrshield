@@ -39,6 +39,6 @@ class Adoption extends Model
         'id',                  
         'id',                  
         'user_id'              
-        )->where('adoption_requests.status', 'approved');;
+        );
     }
 }

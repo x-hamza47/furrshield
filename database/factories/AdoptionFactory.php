@@ -22,9 +22,9 @@ class AdoptionFactory extends Factory
             'species'     => fake()->randomElement(['Dog', 'Cat', 'Rabbit']),
             'breed'       => fake()->word(),
             'age'         => fake()->numberBetween(1, 12),
-            'status'      => 'available',
+            'status'      => fake()->randomElement(['available', 'adopted']),
             'description' => fake()->sentence(),
-            'image'       => null, // optional, or fake()->imageUrl()
+            'image'       => null, 
         ];
     }
 }
