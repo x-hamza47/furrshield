@@ -100,7 +100,9 @@ class AppointmentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $appointment->delete();
+        return redirect()->route('appts.index')->with('success', 'Appointment deleted successfully.');
     }
 
     public function vetSlots(User $vet)

@@ -104,7 +104,7 @@
         {{-- Filters --}}
         <div class="filter-card">
             <form action="{{ route('appts.index') }}" method="GET" class="row g-3 align-items-center">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <input type="text" name="search" class="form-control" placeholder="Search Pet, Owner, or Vet"
                         value="{{ request('search') }}">
                 </div>
@@ -117,7 +117,7 @@
                         </option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex gap-2">
+                <div class="col-md-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary"><i class="bx bx-search"></i> Filter</button>
                     <a href="{{ route('appts.index') }}" class="btn btn-outline-secondary">Reset</a>
                 </div>
