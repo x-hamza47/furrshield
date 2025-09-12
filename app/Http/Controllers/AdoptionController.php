@@ -13,12 +13,7 @@ class AdoptionController extends Controller
      */
     public function index()
     {
-        $listings = Adoption::where('shelter_id', Auth::id())
-            ->with('pet')
-            ->latest()
-            ->paginate(10);
-
-        return view('adoptions.index', compact('listings'));
+     
     }
 
     /**
