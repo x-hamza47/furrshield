@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\AdoptionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ShelterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VetController;
+use App\Models\Adoption;
 use Illuminate\Support\Facades\Route;
 
 
@@ -27,3 +29,5 @@ Route::get('dashboard/shelter/edit/{id}', [ShelterController::class, 'edit'])->n
 
 Route::resource('dashboard/appts', AppointmentController::class);
 Route::get('/vet-slots/{vet}', [AppointmentController::class, 'vetSlots'])->name('vet.slots');
+
+Route::resource('dashboard/shelter/adoption', AdoptionController::class);

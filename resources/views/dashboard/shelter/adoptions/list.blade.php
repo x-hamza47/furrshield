@@ -96,30 +96,28 @@
         }
     </style>
 @endpush
-
 @section('content')
     <div class="container">
-        <h2 class="mb-4 text-primary fw-bold"><i class="bx bx-calendar-check"></i> Appointments</h2>
+        <h2 class="mb-4 text-primary fw-bold"><i class="bx bx-paw"></i> Adoption Listings</h2>
 
         {{-- Filters --}}
         <div class="filter-card">
-            <form action="{{ route('appts.index') }}" method="GET" class="row g-3 align-items-center">
+            <form action="{{ route('adoptions.index') }}" method="GET" class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <input type="text" name="search" class="form-control" placeholder="Search Pet, Owner, or Vet"
+                    <input type="text" name="search" class="form-control" placeholder="Search Pet or Breed"
                         value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
                     <select name="status" class="form-select">
                         <option value="">All Status</option>
+                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed
-                        </option>
+                        <option value="adopted" {{ request('status') == 'adopted' ? 'selected' : '' }}>Adopted</option>
                     </select>
                 </div>
                 <div class="col-md-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary"><i class="bx bx-search"></i> Filter</button>
-                    <a href="{{ route('appts.index') }}" class="btn btn-outline-secondary">Reset</a>
+                    <a href="{{ route('adoptions.index') }}" class="btn btn-outline-secondary">Reset</a>
                 </div>
             </form>
         </div>
@@ -131,46 +129,44 @@
                         <th class="text-white">#</th>
                         <th class="text-white">Pet Name</th>
                         <th class="text-white">Species</th>
-                        <th class="text-white">Owner Name</th>
-                        <th class="text-white">Vet</th>
-                        <th class="text-white">Date</th>
-                        <th class="text-white">Time</th>
+                        <th class="text-white">Breed</th>
+                        <th class="text-white">Age</th>
                         <th class="text-white">Status</th>
                         <th class="text-white">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($appts as $appt)
+                    @foreach ($listings as $listing)
                         <tr>
-                            <td>{{ $appts->firstItem() + $loop->index }}</td>
-                            <td>{{ $appt->pet->name ?? 'N/A' }}</td>
-                            <td>{{ $appt->pet->species ?? 'N/A' }}</td>
-                            <td>{{ $appt->owner->name ?? 'N/A' }}</td>
-                            <td>{{ $appt->vet->name ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($appt->appt_date)->format('d M, Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($appt->appt_time)->format('H:i') }}</td>
+                            <td>{{ $listings->firstItem() + $loop->index }}</td>
+                            <td>{{ $listing->pet->name ?? 'N/A' }}</td>
+                            <td>{{ $listing->pet->species ?? 'N/A' }}</td>
+                            <td>{{ $listing->pet->breed ?? 'N/A' }}</td>
+                            <td>{{ $listing->pet->age ?? 'N/A' }}</td>
                             <td>
-                                <span
-                                    class="badge-status 
-                            {{ $appt->status == 'pending' ? 'status-pending' : '' }}
-                            {{ $appt->status == 'approved' ? 'status-approved' : '' }}
-                            {{ $appt->status == 'completed' ? 'status-completed' : '' }}
-                        ">{{ $appt->status }}</span>
+                                <span class="badge-status 
+                                    {{ $listing->status == 'available' ? 'status-approved' : '' }}
+                                    {{ $listing->status == 'pending' ? 'status-pending' : '' }}
+                                    {{ $listing->status == 'adopted' ? 'status-completed' : '' }}">
+                                    {{ $listing->status }}
+                                </span>
                             </td>
                             <td class="d-flex flex-wrap justify-content-center gap-2">
                                 <!-- View Modal Button -->
                                 <button type="button" class="btn btn-info btn-action btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#apptModal{{ $appt->id }}">
+                                    data-bs-target="#listingModal{{ $listing->listing_id }}">
                                     <i class="bx bx-show"></i>
                                 </button>
 
                                 <!-- Edit Button -->
-                                <a href="{{ route('appts.edit', $appt->id) }}" class="btn btn-warning btn-action btn-sm">
+                                <a href="{{ route('adoptions.edit', $listing->listing_id) }}" 
+                                   class="btn btn-warning btn-action btn-sm">
                                     <i class="bx bx-edit-alt"></i>
                                 </a>
 
                                 <!-- Delete Button -->
-                                <form action="{{ route('appts.destroy', $appt->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('adoptions.destroy', $listing->listing_id) }}" method="POST"
+                                    class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-action btn-sm"
@@ -181,52 +177,49 @@
                             </td>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="apptModal{{ $appt->id }}" tabindex="-1"
-                                aria-labelledby="apptModalLabel{{ $appt->id }}" aria-hidden="true"
+                            <div class="modal fade" id="listingModal{{ $listing->listing_id }}" tabindex="-1"
+                                aria-labelledby="listingModalLabel{{ $listing->listing_id }}" aria-hidden="true"
                                 data-bs-backdrop="static" data-bs-keyboard="false">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content rounded-4 shadow">
                                         <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title text-white" id="apptModalLabel{{ $appt->id }}"><i
-                                                    class="bx bx-calendar-check me-1"></i> Appointment Details</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                            <h5 class="modal-title text-white" id="listingModalLabel{{ $listing->listing_id }}">
+                                                <i class="bx bx-paw me-1"></i> Pet Details
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white"
+                                                data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-start">
-                                            <p><strong>Pet:</strong> {{ $appt->pet->name ?? 'N/A' }}</p>
-                                            <p><strong>Owner:</strong> {{ $appt->owner->name ?? 'N/A' }}</p>
-                                            <p><strong>Vet:</strong> {{ $appt->vet->name ?? 'N/A' }}</p>
-                                            <p><strong>Date:</strong>
-                                                {{ \Carbon\Carbon::parse($appt->appt_date)->format('d M, Y') }}</p>
-                                            <p><strong>Time:</strong>
-                                                {{ \Carbon\Carbon::parse($appt->appt_time)->format('H:i') }}</p>
+                                            <p><strong>Name:</strong> {{ $listing->pet->name ?? 'N/A' }}</p>
+                                            <p><strong>Species:</strong> {{ $listing->pet->species ?? 'N/A' }}</p>
+                                            <p><strong>Breed:</strong> {{ $listing->pet->breed ?? 'N/A' }}</p>
+                                            <p><strong>Age:</strong> {{ $listing->pet->age ?? 'N/A' }}</p>
                                             <p><strong>Status:</strong>
-                                                <span
-                                                    class="badge-status 
-                                        {{ $appt->status == 'pending' ? 'status-pending' : '' }}
-                                        {{ $appt->status == 'approved' ? 'status-approved' : '' }}
-                                        {{ $appt->status == 'completed' ? 'status-completed' : '' }}
-                                    ">{{ $appt->status }}</span>
+                                                <span class="badge-status 
+                                                    {{ $listing->status == 'available' ? 'status-approved' : '' }}
+                                                    {{ $listing->status == 'pending' ? 'status-pending' : '' }}
+                                                    {{ $listing->status == 'adopted' ? 'status-completed' : '' }}">
+                                                    {{ $listing->status }}
+                                                </span>
                                             </p>
-                                            <p><strong>Owner Email:</strong> {{ $appt->owner->email ?? 'N/A' }}</p>
-                                            <p><strong>Owner Phone:</strong> {{ $appt->owner->contact ?? 'N/A' }}</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="{{ route('appts.edit', $appt->id) }}" class="btn btn-primary">Edit
-                                                Appointment</a>
+                                            <a href="{{ route('adoptions.edit', $listing->listing_id) }}"
+                                               class="btn btn-primary">Edit Listing</a>
                                             <button type="button" class="btn btn-outline-secondary"
                                                 data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
         <div class="d-flex justify-content-center mt-4">
-            {{ $appts->links() }}
+            {{ $listings->links() }}
         </div>
     </div>
 @endsection

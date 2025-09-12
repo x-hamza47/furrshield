@@ -112,5 +112,33 @@
         @endcan
         {{-- Info: Admin End --}}
 
+        @can('shelter-view')
+
+            {{-- Adoption Listings --}}
+            <li class="menu-item {{ Route::is('adoption.index') ? 'active' : '' }}">
+                <a href="{{ route('adoption.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-paw"></i>
+                    <div data-i18n=" Adoption Listings"> Adoption Listings</div>
+                </a>
+            </li>
+
+            {{-- Care Status --}}
+            <li class="menu-item ">
+                <a href="" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-first-aid"></i>
+                    <div data-i18n=" Care Status"> Care Status</div>
+                </a>
+            </li>
+
+            {{-- Adoption Requests --}}
+            <li class="menu-item ">
+                <a href="{{ route('adoption.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-message-check"></i>
+                    <div data-i18n=" Adoption Requests"> Adoption Requests</div>
+                </a>
+            </li>
+        @endcan
+
+
     </ul>
 </aside>

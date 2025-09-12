@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('adoptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shelter_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('shelter_id')->constrained('users')->onDelete('cascade'); 
             $table->string('name');
             $table->string('species');
             $table->string('breed')->nullable();
             $table->integer('age')->nullable();
             $table->enum('status', ['available', 'adopted'])->default('available');
             $table->text('description')->nullable();
+            $table->string('image')->nullable(); 
             $table->timestamps();
         });
     }
