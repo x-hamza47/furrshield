@@ -2,39 +2,72 @@
 
 @push('styles')
 <style>
+    /* Container & Table */
     .table-modern {
         background: #fff;
-        border-radius: 12px;
+        border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        font-size: 0.95rem;
     }
 
+    /* Header */
     .table-modern thead {
-        background: linear-gradient(90deg, #4e73df, #1cc88a);
+        background: linear-gradient(90deg, #6a11cb, #2575fc);
         color: #fff;
     }
 
-    .table-modern th, .table-modern td {
-        vertical-align: middle;
+    .table-modern th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Body */
+    .table-modern tbody tr {
+        transition: all 0.3s ease;
     }
 
     .table-modern tbody tr:hover {
-        background-color: #f1f3f6;
-        cursor: pointer;
+        background: #f3f4f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
 
+    /* Rounded cells */
+    .table-modern td, .table-modern th {
+        vertical-align: middle;
+        border: none;
+        padding: 12px 15px;
+    }
+
+    /* Status badges */
     .badge-status {
-        padding: 0.4em 0.7em;
-        font-size: 0.85rem;
-        border-radius: 10px;
+        font-weight: 500;
+        padding: 0.45em 0.75em;
+        border-radius: 12px;
+        color: #fff;
+        text-transform: capitalize;
     }
 
+    .status-pending { background: linear-gradient(45deg, #f6b93b, #fa983a); }
+    .status-approved { background: linear-gradient(45deg, #20bf6b, #01baef); }
+    .status-completed { background: linear-gradient(45deg, #4a69bd, #6a89cc); }
+
+    /* Action buttons */
     .btn-action {
-        padding: 0.35rem 0.6rem;
         font-size: 0.85rem;
+        padding: 0.35rem 0.65rem;
         border-radius: 8px;
+        transition: all 0.2s ease;
     }
 
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Responsive scroll */
     @media (max-width: 768px) {
         .table-responsive {
             overflow-x: auto;
@@ -49,44 +82,41 @@
 
     <div class="table-responsive">
         <table class="table table-modern align-middle text-center">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Pet Name</th>
-                    <th>Owner Name</th>
-                    <th>Vet</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+            <thead >
+                <tr >
+                    <th class="text-white">#</th>
+                    <th class="text-white">Pet Name</th>
+                    <th class="text-white">Owner Name</th>
+                    <th class="text-white">Vet</th>
+                    <th class="text-white">Date</th>
+                    <th class="text-white">Time</th>
+                    <th class="text-white">Status</th>
+                    <th class="text-white">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($appointments as $appointment)
+                @foreach($appts as $appt)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $appointment->pet->name ?? 'N/A' }}</td>
-                    <td>{{ $appointment->owner->name ?? 'N/A' }}</td>
-                    <td>{{ $appointment->vet->name ?? 'N/A' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($appointment->date)->format('d M, Y') }}</td>
-                    <td>{{ $appointment->time }}</td>
+                    <td>{{ $appts->firstItem() + $loop->index }}</td>
+                    <td>{{ $appt->pet->name ?? 'N/A' }}</td>
+                    <td>{{ $appt->owner->name ?? 'N/A' }}</td>
+                    <td>{{ $appt->vet->name ?? 'N/A' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($appt->appt_date)->format('d M, Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($appt->appt_time)->format('H:i') }}</td>
                     <td>
-                        @php
-                            $status = strtolower($appointment->status);
-                        @endphp
-                        <span class="badge badge-status 
-                            {{ $status == 'pending' ? 'bg-warning text-dark' : '' }}
-                            {{ $status == 'confirmed' ? 'bg-success' : '' }}
-                            {{ $status == 'canceled' ? 'bg-danger' : '' }}
-                        ">{{ ucfirst($appointment->status) }}</span>
+                        <span class="badge-status 
+                            {{ $appt->status == 'pending' ? 'status-pending' : '' }}
+                            {{ $appt->status == 'approved' ? 'status-approved' : '' }}
+                            {{ $appt->status == 'completed' ? 'status-completed' : '' }}
+                        ">{{ $appt->status }}</span>
                     </td>
-                    <td>
-                        <a href="{{ route('appointments.show', $appointment->id) }}" class="btn btn-sm btn-info btn-action"><i class="bx bx-show"></i></a>
-                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-sm btn-warning btn-action"><i class="bx bx-edit-alt"></i></a>
-                        <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" class="d-inline">
+                    <td class="d-flex justify-content-center gap-1">
+                        <a href="{{ route('appts.show', $appt->id) }}" class="btn btn-info btn-action"><i class="bx bx-show"></i></a>
+                        <a href="{{ route('appts.edit', $appt->id) }}" class="btn btn-warning btn-action"><i class="bx bx-edit-alt"></i></a>
+                        <form action="{{ route('appts.destroy', $appt->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger btn-action" onclick="return confirm('Are you sure?')">
+                            <button type="submit" class="btn btn-danger btn-action" onclick="return confirm('Are you sure?')">
                                 <i class="bx bx-trash"></i>
                             </button>
                         </form>
@@ -98,7 +128,7 @@
     </div>
 
     <div class="d-flex justify-content-center mt-4">
-        {{ $appointments->links() }}
+        {{ $appts->links() }}
     </div>
 </div>
 @endsection

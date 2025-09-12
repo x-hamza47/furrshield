@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ShelterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VetController;
@@ -24,4 +25,4 @@ Route::get('dashboard/vets/edit/{id}', [VetController::class, 'edit'])->name('ve
 Route::get('dashboard/shelter', [ShelterController::class, 'index'])->name('shelter.index');
 Route::get('dashboard/shelter/edit/{id}', [ShelterController::class, 'edit'])->name('shelter.edit');
 
-Route::get('dashboard/appointments', []);
+Route::resource('dashboard/appts', AppointmentController::class);
