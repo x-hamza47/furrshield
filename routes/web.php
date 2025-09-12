@@ -1,14 +1,17 @@
 <?php
 
-use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\AdoptionController;
-use App\Http\Controllers\AdoptionRequestController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\ShelterController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\VetController;
 use App\Models\Adoption;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VetController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShelterController;
+use App\Http\Controllers\AdoptionController;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\HealthRecordController;
+use App\Http\Controllers\AdoptionRequestController;
 
 
 Route::get('admin', [AuthController::class, 'showLogin'])->name('login')->middleware('IsAuthenticated');
@@ -38,3 +41,16 @@ Route::post('adoption-requests/{id}/approve', [AdoptionRequestController::class,
 Route::post('adoption-requests/{id}/reject', [AdoptionRequestController::class, 'reject'])->name('adoption-requests.reject');
 
 Route::get('adoption-requests/history', [AdoptionRequestController::class, 'history'])->name('adoption-requests.history');
+
+//! Zain Health Record
+Route::resource('dashboard/health-records', HealthRecordController::class);
+Route::delete('/dashboard/health-records/pet/{id}', [HealthRecordController::class, 'petDestroy'])->name('health-records.pet.destroy');
+
+//! Zain Products
+// Route::get('dashboard/products', [ProductController::class, 'index'])->name('product.index');
+// Route::post('dashboard/addToCart/{id}', [ProductController::class, 'add'])->name('product.add');
+// Route::resource('products', ProductController::class);
+//! Zain Profile
+Route::resource('profile', ProfileController::class);
+Route::put('/profile/{id}/avatar', [ProfileController::class, 'uploadAvatar'])->name('profile.uploadAvatar');
+Route::delete('/profile/{id}/avatar', [ProfileController::class, 'removeAvatar'])->name('profile.removeAvatar');

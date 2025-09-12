@@ -146,6 +146,33 @@
             </li>
         @endcan
 
+            @can('vet-view')
+            {{-- ! Vaccines --}}
+            {{-- <li class="menu-item  {{ Route::is('users.*') ? 'active' : '' }}">
+                <a href="{{ route('users.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-group"></i>
+                    <div data-i18n=" Manage Users">Appointments</div>
+                </a>
+            </li> --}}
+            <li class="menu-item ">
+                <a href="{{ route('appts.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-user-voice"></i>
+                    <div data-i18n=" Veterinarians"> Appointments</div>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a href="{{ route('health-records.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-home-heart"></i>
+                    <div data-i18n=" Animal Shelters">Health Record</div>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a href="{{ route('profile.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-home-heart"></i>
+                    <div data-i18n=" Animal Shelters">Profile</div>
+                </a>
+            </li>
+        @endcan
 
     </ul>
 </aside>

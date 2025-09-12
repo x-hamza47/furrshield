@@ -9,7 +9,8 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pet_id', 'owner_id', 'vet_id', 'appt_date', 'appt_time', 'status'];
+    // protected $fillable = ['pet_id', 'owner_id', 'vet_id', 'appt_date', 'appt_time', 'status'];
+    protected $guarded = [];
 
     public function pet()
     {

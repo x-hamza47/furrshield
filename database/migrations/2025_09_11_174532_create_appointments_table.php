@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('vet_id')->constrained('users')->onDelete('cascade');
             $table->date('appt_date');
             $table->time('appt_time');
-            $table->enum('status', ['pending', 'approved', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'rejected', 'rescheduled', 'completed'])->default('pending');
             $table->timestamps();
         });
     }

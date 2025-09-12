@@ -55,8 +55,12 @@
             background: linear-gradient(45deg, #f6b93b, #fa983a);
         }
 
-        .status-approved {
-            background: linear-gradient(45deg, #20bf6b, #01baef);
+        .status-rejected {
+            background: linear-gradient(45deg, #bf2020, #ef0101);
+        }
+
+        .status-rescheduled {
+            background: linear-gradient(45deg, #20bf20, #01ef01);
         }
 
         .status-completed {
@@ -100,7 +104,7 @@
 @section('content')
     <div class="container">
         <h2 class="mb-4 text-primary fw-bold"><i class="bx bx-calendar-check"></i> Appointments</h2>
-        {{ $appts }}
+
         {{-- Filters --}}
         <div class="filter-card">
             <form action="{{ route('appts.index') }}" method="GET" class="row g-3 align-items-center">
@@ -112,7 +116,9 @@
                     <select name="status" class="form-select">
                         <option value="">All Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="rescheduled" {{ request('status') == 'rescheduled' ? 'selected' : '' }}>Rescheduled
+                        </option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed
                         </option>
                     </select>
@@ -153,7 +159,8 @@
                                 <span
                                     class="badge-status 
                             {{ $appt->status == 'pending' ? 'status-pending' : '' }}
-                            {{ $appt->status == 'approved' ? 'status-approved' : '' }}
+                            {{ $appt->status == 'rejected' ? 'status-rejected' : '' }}
+                            {{ $appt->status == 'rescheduled' ? 'status-rescheduled' : '' }}
                             {{ $appt->status == 'completed' ? 'status-completed' : '' }}
                         ">{{ $appt->status }}</span>
                             </td>
@@ -194,6 +201,7 @@
                                         </div>
                                         <div class="modal-body text-start">
                                             <p><strong>Pet:</strong> {{ $appt->pet->name ?? 'N/A' }}</p>
+                                            <p><strong>Species:</strong> {{ $appt->pet->species ?? 'N/A' }}</p>
                                             <p><strong>Owner:</strong> {{ $appt->owner->name ?? 'N/A' }}</p>
                                             <p><strong>Vet:</strong> {{ $appt->vet->name ?? 'N/A' }}</p>
                                             <p><strong>Date:</strong>
@@ -203,14 +211,46 @@
                                             <p><strong>Status:</strong>
                                                 <span
                                                     class="badge-status 
-                                        {{ $appt->status == 'pending' ? 'status-pending' : '' }}
-                                        {{ $appt->status == 'approved' ? 'status-approved' : '' }}
-                                        {{ $appt->status == 'completed' ? 'status-completed' : '' }}
-                                    ">{{ $appt->status }}</span>
+            {{ $appt->status == 'pending' ? 'status-pending' : '' }}
+            {{ $appt->status == 'rejected' ? 'status-rejected' : '' }}
+            {{ $appt->status == 'rescheduled' ? 'status-rescheduled' : '' }}
+            {{ $appt->status == 'completed' ? 'status-completed' : '' }}">
+                                                    {{ $appt->status }}
+                                                </span>
                                             </p>
                                             <p><strong>Owner Email:</strong> {{ $appt->owner->email ?? 'N/A' }}</p>
                                             <p><strong>Owner Phone:</strong> {{ $appt->owner->contact ?? 'N/A' }}</p>
+
+                                            @if ($appt->status === 'completed' && $appt->pet->healthRecords->isNotEmpty())
+                                                @php
+                                                    // Get the latest by visit_date or fallback to created_at
+                                                    $latest = $appt->pet->healthRecords
+                                                        ->sortByDesc('visit_date')
+                                                        ->first();
+                                                @endphp
+                                                <hr>
+                                                <h6 class="fw-bold text-primary">Latest Health Record</h6>
+                                                <p><strong>Symptoms:</strong> {{ $latest->symptoms ?? 'N/A' }}</p>
+                                                <p><strong>Diagnosis:</strong> {{ $latest->diagnosis ?? 'N/A' }}</p>
+                                                <p><strong>Treatment:</strong> {{ $latest->treatment ?? 'N/A' }}</p>
+                                                <p><strong>Notes:</strong> {{ $latest->notes ?? 'N/A' }}</p>
+
+                                                @if (!empty($latest->lab_reports))
+                                                    <p><strong>Lab Reports:</strong></p>
+                                                    <ul>
+                                                        @foreach ($latest->lab_reports as $test => $result)
+                                                            {{-- model casts JSON → array --}}
+                                                            <li>
+                                                                <strong>{{ ucfirst(str_replace('_', ' ', $test)) }}:</strong>
+                                                                {{ $result }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            @endif
+
                                         </div>
+
                                         <div class="modal-footer">
                                             <a href="{{ route('appts.edit', $appt->id) }}" class="btn btn-primary">Edit
                                                 Appointment</a>
