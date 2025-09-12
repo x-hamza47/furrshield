@@ -16,7 +16,7 @@ class ShelterSeeder extends Seeder
     public function run(): void
     {
         $shelters = User::factory()
-            ->count(3)
+            ->count(10)
             ->create([
                 'role' => 'shelter',
             ]);

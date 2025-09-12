@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use App\Models\Pet;
 use App\Models\User;
 use App\Models\Appointment;
@@ -16,21 +17,23 @@ class AppointmentSeeder extends Seeder
     public function run(): void
     {
         $pets = Pet::with('owner')->inRandomOrder()->take(10)->get();
-
-
         $vets = User::where('role', 'vet')->get();
 
         foreach ($pets as $pet) {
             if ($vets->count() === 0) {
-                continue; 
+                continue;
             }
+
+            // Generate random appointment date and time
+            $randomDateTime = Carbon::now()->addDays(rand(1, 14))->setHour(rand(9, 17))->setMinute([0, 15, 30, 45][array_rand([0, 15, 30, 45])]);
 
             Appointment::create([
                 'pet_id' => $pet->id,
-                'owner_id' => $pet->owner_id, 
+                'owner_id' => $pet->owner_id,
                 'vet_id' => $vets->random()->id,
-                'appointment_time' => now()->addDays(rand(1, 14)),
-                'status' => 'pending',
+                'appt_date' => $randomDateTime->toDateString(),
+                'appt_time' => $randomDateTime->format('H:i:s'),
+                'status' => ['pending', 'approved', 'completed'][array_rand(['pending', 'approved', 'completed'])],
             ]);
         }
     }
