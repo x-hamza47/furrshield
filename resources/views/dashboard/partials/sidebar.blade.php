@@ -85,6 +85,12 @@
                     <div data-i18n=" Animal Shelters"> Animal Shelters</div>
                 </a>
             </li>
+            <li class="menu-item {{ Route::is('appts.*') ? 'active' : '' }}">
+                <a href="{{ route('appts.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-calendar-check"></i>
+                    <div data-i18n=" Appointments"> Appointments</div>
+                </a>
+            </li>
             <li class="menu-item ">
                 <a href="" class="menu-link">
                     <i class="menu-icon icon-base bx bx-cart-alt"></i>
@@ -95,12 +101,6 @@
                 <a href="" class="menu-link">
                     <i class="menu-icon icon-base bx bx-package"></i>
                     <div data-i18n=" Products"> Products</div>
-                </a>
-            </li>
-            <li class="menu-item {{ Route::is('appts.*') ? 'active' : '' }}">
-                <a href="{{ route('appts.index') }}" class="menu-link">
-                    <i class="menu-icon icon-base bx bx-calendar-check"></i>
-                    <div data-i18n=" Appointments"> Appointments</div>
                 </a>
             </li>
             <li class="menu-item ">
