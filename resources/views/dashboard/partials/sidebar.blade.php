@@ -73,14 +73,14 @@
                     <div data-i18n=" Manage Users"> Manage Users</div>
                 </a>
             </li>
-            <li class="menu-item ">
-                <a href="" class="menu-link">
+            <li class="menu-item {{ Route::is('vets.*') ? 'active' : '' }}">
+                <a href="{{ route('vets.index') }}" class="menu-link">
                     <i class="menu-icon icon-base bx bx-user-voice"></i>
                     <div data-i18n=" Veterinarians"> Veterinarians</div>
                 </a>
             </li>
-            <li class="menu-item ">
-                <a href="" class="menu-link">
+            <li class="menu-item {{ Route::is('shelter.*') ? 'active' : '' }}">
+                <a href="{{ route('shelter.index') }}" class="menu-link">
                     <i class="menu-icon icon-base bx bx-home-heart"></i>
                     <div data-i18n=" Animal Shelters"> Animal Shelters</div>
                 </a>
@@ -97,7 +97,7 @@
                     <div data-i18n=" Products"> Products</div>
                 </a>
             </li>
-            <li class="menu-item ">
+            <li class="menu-item {{ Route::is('appointments.*') ? 'active' : '' }}">
                 <a href="" class="menu-link">
                     <i class="menu-icon icon-base bx bx-calendar-check"></i>
                     <div data-i18n=" Appointments"> Appointments</div>

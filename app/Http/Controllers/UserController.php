@@ -12,7 +12,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query()->where('role', '!=', 'admin'); 
+        $query = User::query()->where('role', '!=', 'admin');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -77,7 +77,6 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        // return $request->all();
 
         $rules = [
             'name' => 'required|string',
@@ -110,10 +109,21 @@ class UserController extends Controller
 
 
         if ($user->role == 'vet' && $user->vet) {
+            $slots = [];
+            if ($request->filled('slot_day')) {
+                foreach ($request->slot_day as $index => $day) {
+                    $start = $request->slot_start_time[$index] ?? '';
+                    $end = $request->slot_end_time[$index] ?? '';
+                    if ($day && $start && $end) {
+                        $slots[] = "$day $start-$end";
+                    }
+                }
+            }
+
             $user->vet->update([
                 'specialization' => $request->specialization,
                 'experience' => $request->experience,
-                'available_slots' => isset($request->available_slots) ? json_encode($request->available_slots) : null,
+                'available_slots' => json_encode($slots),
             ]);
         }
 
@@ -124,7 +134,7 @@ class UserController extends Controller
             ]);
         }
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->back()->with('success', 'User updated successfully.');
     }
 
     /**
@@ -134,6 +144,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User Deleted successfully.');
+        return redirect()->back()->with('success', 'User Deleted successfully.');
     }
 }
