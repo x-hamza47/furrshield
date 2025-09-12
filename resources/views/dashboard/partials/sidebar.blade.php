@@ -97,8 +97,8 @@
                     <div data-i18n=" Products"> Products</div>
                 </a>
             </li>
-            <li class="menu-item {{ Route::is('appointments.*') ? 'active' : '' }}">
-                <a href="" class="menu-link">
+            <li class="menu-item {{ Route::is('appts.*') ? 'active' : '' }}">
+                <a href="{{ route('appts.index') }}" class="menu-link">
                     <i class="menu-icon icon-base bx bx-calendar-check"></i>
                     <div data-i18n=" Appointments"> Appointments</div>
                 </a>
