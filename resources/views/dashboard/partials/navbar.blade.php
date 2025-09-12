@@ -43,8 +43,8 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <span class="fw-semibold d-block text-capitalize"></span>
-                                    <small class="text-muted "></small>
+                                    <span class="fw-semibold d-block text-capitalize">{{ auth()->user()->name }}</span>
+                                    <small class="text-muted ">{{ auth()->user()->role }}</small>
                                 </div>
                             </div>
                         </a>

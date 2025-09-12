@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AdoptionRequest;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Product;
@@ -16,16 +17,20 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call([
-            AdminSeeder::class,
-            ShelterSeeder::class,
+            // AdminSeeder::class,
+            // ShelterSeeder::class,
+            // VetSeeder::class,
+            // OrderSeeder::class,
             AppointmentSeeder::class,
-            VetSeeder::class,
-            OrderSeeder::class,
+
         ]);
-        // User::factory(5)->hasPets(3)->create(['role' => 'owner']);
+        // User::factory(10)->hasPets(3)->create(['role' => 'owner']);
 
+        // $this->call([
+        //     AdoptionSeeder::class,
 
-        // Product::factory(10)->create();
+        // ]);
 
+        // Product::factory(15)->create();
     }
 }

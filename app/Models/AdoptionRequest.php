@@ -13,7 +13,7 @@ class AdoptionRequest extends Model
 
     public function adoption()
     {
-        return $this->belongsTo(Adoption::class, 'adoption_id');
+        return $this->belongsTo(Adoption::class);
     }
 
     public function adopter()

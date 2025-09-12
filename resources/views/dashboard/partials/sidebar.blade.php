@@ -115,9 +115,9 @@
         @can('shelter-view')
 
             {{-- Adoption Listings --}}
-            <li class="menu-item {{ Route::is('adoption.index') ? 'active' : '' }}">
+            <li class="menu-item {{ Route::is('adoption.*') ? 'active' : '' }}">
                 <a href="{{ route('adoption.index') }}" class="menu-link">
-                    <i class="menu-icon icon-base bx bx-paw"></i>
+                    <i class="menu-icon icon-base bx bx-heart"></i>
                     <div data-i18n=" Adoption Listings"> Adoption Listings</div>
                 </a>
             </li>
@@ -131,8 +131,8 @@
             </li>
 
             {{-- Adoption Requests --}}
-            <li class="menu-item ">
-                <a href="{{ route('adoption.index') }}" class="menu-link">
+            <li class="menu-item {{ Route::is('adoption-requests.*') ? 'active' : '' }}">
+                <a href="{{ route('adoption-requests.index') }}" class="menu-link">
                     <i class="menu-icon icon-base bx bx-message-check"></i>
                     <div data-i18n=" Adoption Requests"> Adoption Requests</div>
                 </a>

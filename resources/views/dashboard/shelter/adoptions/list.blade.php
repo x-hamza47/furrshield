@@ -2,7 +2,6 @@
 
 @push('styles')
     <style>
-        /* Container & Table */
         .table-modern {
             background: #fff;
             border-radius: 15px;
@@ -11,7 +10,6 @@
             font-size: 0.95rem;
         }
 
-        /* Header */
         .table-modern thead {
             background: linear-gradient(90deg, #6a11cb, #2575fc);
             color: #fff;
@@ -23,7 +21,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Body */
         .table-modern tbody tr {
             transition: all 0.3s ease;
         }
@@ -34,7 +31,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
 
-        /* Rounded cells */
         .table-modern td,
         .table-modern th {
             vertical-align: middle;
@@ -42,7 +38,6 @@
             padding: 12px 15px;
         }
 
-        /* Status badges */
         .badge-status {
             font-weight: 500;
             padding: 0.45em 0.75em;
@@ -51,19 +46,18 @@
             text-transform: capitalize;
         }
 
+        .status-available {
+            background: linear-gradient(45deg, #20bf6b, #01baef);
+        }
+
         .status-pending {
             background: linear-gradient(45deg, #f6b93b, #fa983a);
         }
 
-        .status-approved {
-            background: linear-gradient(45deg, #20bf6b, #01baef);
-        }
-
-        .status-completed {
+        .status-adopted {
             background: linear-gradient(45deg, #4a69bd, #6a89cc);
         }
 
-        /* Action buttons */
         .btn-action {
             font-size: 0.85rem;
             padding: 0.35rem 0.65rem;
@@ -88,7 +82,6 @@
             border-radius: 8px;
         }
 
-        /* Responsive scroll */
         @media (max-width: 768px) {
             .table-responsive {
                 overflow-x: auto;
@@ -96,13 +89,17 @@
         }
     </style>
 @endpush
+{{-- <pre>
+    {{ $listings }}
+</pre> --}}
+
 @section('content')
-    <div class="container">
-        <h2 class="mb-4 text-primary fw-bold"><i class="bx bx-paw"></i> Adoption Listings</h2>
+    <div class="container mt-4">
+        <h2 class="mb-4 text-primary fw-bold"><i class="bx bx-heart"></i> Adoption Listings</h2>
 
         {{-- Filters --}}
         <div class="filter-card">
-            <form action="{{ route('adoptions.index') }}" method="GET" class="row g-3 align-items-center">
+            <form action="{{ route('adoption.index') }}" method="GET" class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <input type="text" name="search" class="form-control" placeholder="Search Pet or Breed"
                         value="{{ request('search') }}">
@@ -110,14 +107,14 @@
                 <div class="col-md-2">
                     <select name="status" class="form-select">
                         <option value="">All Status</option>
-                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available
+                        </option>
                         <option value="adopted" {{ request('status') == 'adopted' ? 'selected' : '' }}>Adopted</option>
                     </select>
                 </div>
                 <div class="col-md-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary"><i class="bx bx-search"></i> Filter</button>
-                    <a href="{{ route('adoptions.index') }}" class="btn btn-outline-secondary">Reset</a>
+                    <a href="{{ route('adoption.index') }}" class="btn btn-outline-secondary">Reset</a>
                 </div>
             </form>
         </div>
@@ -139,33 +136,30 @@
                     @foreach ($listings as $listing)
                         <tr>
                             <td>{{ $listings->firstItem() + $loop->index }}</td>
-                            <td>{{ $listing->pet->name ?? 'N/A' }}</td>
-                            <td>{{ $listing->pet->species ?? 'N/A' }}</td>
-                            <td>{{ $listing->pet->breed ?? 'N/A' }}</td>
-                            <td>{{ $listing->pet->age ?? 'N/A' }}</td>
+                            <td>{{ $listing->name }}</td>
+                            <td>{{ $listing->species }}</td>
+                            <td>{{ $listing->breed ?? 'N/A' }}</td>
+                            <td>{{ $listing->age ?? 'N/A' }}</td>
                             <td>
-                                <span class="badge-status 
-                                    {{ $listing->status == 'available' ? 'status-approved' : '' }}
-                                    {{ $listing->status == 'pending' ? 'status-pending' : '' }}
-                                    {{ $listing->status == 'adopted' ? 'status-completed' : '' }}">
+                                <span class="badge-status status-{{ $listing->status }}">
                                     {{ $listing->status }}
                                 </span>
                             </td>
                             <td class="d-flex flex-wrap justify-content-center gap-2">
                                 <!-- View Modal Button -->
                                 <button type="button" class="btn btn-info btn-action btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#listingModal{{ $listing->listing_id }}">
+                                    data-bs-target="#listingModal{{ $listing->id }}">
                                     <i class="bx bx-show"></i>
                                 </button>
 
                                 <!-- Edit Button -->
-                                <a href="{{ route('adoptions.edit', $listing->listing_id) }}" 
-                                   class="btn btn-warning btn-action btn-sm">
+                                <a href="{{ route('adoption.edit', $listing->id) }}"
+                                    class="btn btn-warning btn-action btn-sm">
                                     <i class="bx bx-edit-alt"></i>
                                 </a>
 
                                 <!-- Delete Button -->
-                                <form action="{{ route('adoptions.destroy', $listing->listing_id) }}" method="POST"
+                                <form action="{{ route('adoption.destroy', $listing->id) }}" method="POST"
                                     class="d-inline">
                                     @csrf
                                     @method('DELETE')
@@ -177,35 +171,49 @@
                             </td>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="listingModal{{ $listing->listing_id }}" tabindex="-1"
-                                aria-labelledby="listingModalLabel{{ $listing->listing_id }}" aria-hidden="true"
+                            <div class="modal fade" id="listingModal{{ $listing->id }}" tabindex="-1"
+                                aria-labelledby="listingModalLabel{{ $listing->id }}" aria-hidden="true"
                                 data-bs-backdrop="static" data-bs-keyboard="false">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content rounded-4 shadow">
                                         <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title text-white" id="listingModalLabel{{ $listing->listing_id }}">
-                                                <i class="bx bx-paw me-1"></i> Pet Details
+                                            <h5 class="modal-title text-white" id="listingModalLabel{{ $listing->id }}">
+                                                <i class="bx bx-bone me-1"></i> Pet Details
                                             </h5>
-                                            <button type="button" class="btn-close btn-close-white"
-                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-start">
-                                            <p><strong>Name:</strong> {{ $listing->pet->name ?? 'N/A' }}</p>
-                                            <p><strong>Species:</strong> {{ $listing->pet->species ?? 'N/A' }}</p>
-                                            <p><strong>Breed:</strong> {{ $listing->pet->breed ?? 'N/A' }}</p>
-                                            <p><strong>Age:</strong> {{ $listing->pet->age ?? 'N/A' }}</p>
+                                            <p><strong>Name:</strong> {{ $listing->name }}</p>
+                                            <p><strong>Species:</strong> {{ $listing->species }}</p>
+                                            <p><strong>Breed:</strong> {{ $listing->breed ?? 'N/A' }}</p>
+                                            <p><strong>Age:</strong> {{ $listing->age ?? 'N/A' }}</p>
                                             <p><strong>Status:</strong>
-                                                <span class="badge-status 
-                                                    {{ $listing->status == 'available' ? 'status-approved' : '' }}
-                                                    {{ $listing->status == 'pending' ? 'status-pending' : '' }}
-                                                    {{ $listing->status == 'adopted' ? 'status-completed' : '' }}">
+                                                <span class="badge-status status-{{ $listing->status }}">
                                                     {{ $listing->status }}
                                                 </span>
                                             </p>
+                                            <p> <span
+                                                    class="badge-status 
+                                                        {{ $listing->status == 'available' ? 'status-approved' : '' }}
+                                                        {{ $listing->status == 'pending' ? 'status-pending' : '' }}
+                                                        {{ $listing->status == 'adopted' ? 'status-completed' : '' }}">
+                                                    {{ $listing->status }}
+                                                </span>
+                                            </p>
+                                            <p><strong>Shelter:</strong> {{ $listing->shelter->name ?? 'N/A' }}</p>
+
+                                            @if ($listing->adopter)
+                                                <p><strong>Adopted By:</strong> {{ $listing->adopter->name }}
+                                                </p>
+                                                <p><strong>Adoption Date:</strong>
+                                                    {{ $listing->updated_at->format('d M Y') }}</p>
+                                            @endif
+                                            <p><strong>Description:</strong> {{ $listing->description ?? 'N/A' }}</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="{{ route('adoptions.edit', $listing->listing_id) }}"
-                                               class="btn btn-primary">Edit Listing</a>
+                                            <a href="{{ route('adoption.edit', $listing->id) }}"
+                                                class="btn btn-primary">Edit Listing</a>
                                             <button type="button" class="btn btn-outline-secondary"
                                                 data-bs-dismiss="modal">Close</button>
                                         </div>

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('species');
             $table->string('breed')->nullable();
             $table->integer('age')->nullable();
+            $table->enum('gender', ['male', 'female']);
             $table->enum('status', ['available', 'adopted'])->default('available');
             $table->text('description')->nullable();
             $table->string('image')->nullable(); 

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Shelter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,13 +17,14 @@ class AdoptionFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'name' => $this->faker->firstName(),
-            'species' => $this->faker->randomElement(['Dog', 'Cat', 'Rabbit']),
-            'breed' => $this->faker->word(),
-            'age' => $this->faker->numberBetween(1, 12),
-            'status' => 'available',
-            'description' => $this->faker->sentence(),
+          return [
+            'name'        => fake()->firstName(),
+            'species'     => fake()->randomElement(['Dog', 'Cat', 'Rabbit']),
+            'breed'       => fake()->word(),
+            'age'         => fake()->numberBetween(1, 12),
+            'status'      => 'available',
+            'description' => fake()->sentence(),
+            'image'       => null, // optional, or fake()->imageUrl()
         ];
     }
 }

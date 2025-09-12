@@ -27,7 +27,18 @@ class Adoption extends Model
 
     public function requests()
     {
-        return $this->hasMany(AdoptionRequest::class, 'adoption_id');
+        return $this->hasMany(AdoptionRequest::class);
     }
- 
+
+    public function adopter()
+    {
+        return $this->hasOneThrough(
+        User::class,           
+        AdoptionRequest::class,
+        'adoption_id',         
+        'id',                  
+        'id',                  
+        'user_id'              
+        )->where('adoption_requests.status', 'approved');;
+    }
 }
