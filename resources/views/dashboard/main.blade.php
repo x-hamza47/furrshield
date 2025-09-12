@@ -14,7 +14,7 @@
                 <!-- / Navbar -->
 
                 <!-- Content wrapper -->
-                <div class="content-wrapper py-5 px-4">
+                <div class="content-wrapper py-3 px-4">
                     @yield('content')
                 </div>
                 <!-- Content -->
