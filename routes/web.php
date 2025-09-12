@@ -26,3 +26,4 @@ Route::get('dashboard/shelter', [ShelterController::class, 'index'])->name('shel
 Route::get('dashboard/shelter/edit/{id}', [ShelterController::class, 'edit'])->name('shelter.edit');
 
 Route::resource('dashboard/appts', AppointmentController::class);
+Route::get('/vet-slots/{vet}', [AppointmentController::class, 'vetSlots'])->name('vet.slots');
