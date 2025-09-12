@@ -19,7 +19,8 @@ class AppointmentController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('pet', fn($q2) => $q2->where('name', 'like', "%$search%"))
+                $q->whereHas('pet', fn($q2) => $q2->where('name', 'like', "%$search%")
+                    ->orWhere('species', 'like', "%$search%"))
                     ->orWhereHas('owner', fn($q2) => $q2->where('name', 'like', "%$search%"))
                     ->orWhereHas('vet', fn($q2) => $q2->where('name', 'like', "%$search%"));
             });
