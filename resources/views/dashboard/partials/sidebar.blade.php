@@ -113,7 +113,6 @@
         {{-- Info: Admin End --}}
 
         @can('shelter-view')
-
             {{-- Adoption Listings --}}
             <li class="menu-item {{ Route::is('adoption.*') ? 'active' : '' }}">
                 <a href="{{ route('adoption.index') }}" class="menu-link">
@@ -146,7 +145,7 @@
             </li>
         @endcan
 
-            @can('vet-view')
+        @can('vet-view')
             {{-- ! Vaccines --}}
             {{-- <li class="menu-item  {{ Route::is('users.*') ? 'active' : '' }}">
                 <a href="{{ route('users.index') }}" class="menu-link">
@@ -166,13 +165,27 @@
                     <div data-i18n=" Animal Shelters">Health Record</div>
                 </a>
             </li>
-            <li class="menu-item ">
-                <a href="{{ route('profile.index') }}" class="menu-link">
-                    <i class="menu-icon icon-base bx bx-home-heart"></i>
-                    <div data-i18n=" Animal Shelters">Profile</div>
-                </a>
-            </li>
         @endcan
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Account</span>
+        </li>
+        {{-- ! Profile --}}
+        <li class="menu-item ">
+            <a href="{{ route('profile.index') }}" class="menu-link">
+                <i class="menu-icon icon-base bx bx-home-heart"></i>
+                <div data-i18n=" Animal Shelters">Profile</div>
+            </a>
+        </li>
+
+
+        {{-- ! Logout --}}
+        <li class="menu-item">
+            <a href="{{ route('auth.logout') }}" class="menu-link">
+                <i class="menu-icon icon-base bx bx-log-out"></i>
+                <div data-i18n="Logout">Logout</div>
+            </a>
+        </li>
+
 
     </ul>
 </aside>
