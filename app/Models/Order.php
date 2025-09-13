@@ -10,6 +10,10 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = ['owner_id', 'order_date', 'total_amount', 'status'];
+    protected $casts = [
+        'order_date' => 'datetime', 
+        'total_amount' => 'decimal:2',
+    ];
 
     public function owner()
     {

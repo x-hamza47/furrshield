@@ -96,13 +96,13 @@
 
 @section('content')
     <div class="container mt-4">
-        <div class="d-flex justify-content-between">
-
-            <h2 class="mb-4 text-primary fw-bold"><i class="bx bx-package"></i> Product Listings</h2>
-            <a href="{{ route('products.create') }}" class="btn btn-success">
-                <i class="bx bx-plus me-1"></i> Add Product
-            </a>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary fw-bold"><i class="bx bx-package"></i> Product Listings</h2>
+                <a href="{{ route('products.create') }}" class="btn btn-success">
+                    <i class="bx bx-plus me-1"></i> Add Product
+                </a>
         </div>
+
         <div class="filter-card">
             <form action="{{ route('products.index') }}" method="GET" class="row g-3 align-items-center">
                 <div class="col-md-4">

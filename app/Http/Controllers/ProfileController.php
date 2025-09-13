@@ -15,12 +15,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Enforce default if null or empty (migration should handle, but safe)
-        if (empty($user->profile_picture)) {
-            $user->profile_picture = 'user_pictures/default.png';
-            $user->save();
-        }
-
         $vet = null;
         $shelter = null;
 
@@ -38,25 +32,23 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Base validation rules
         $rules = [
             'name'    => 'required|string|max:255',
             'email'   => 'required|email|unique:users,email,' . $user->id,
             'contact' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ];
 
         if ($user->role === 'vet') {
-            $rules['specialization'] = 'nullable|string|max:255';
-            $rules['experience']     = 'nullable|integer|min:0';
-
-            // New slot-based validation
-            $rules['slot_day']         = 'nullable|array';
-            $rules['slot_day.*']       = 'nullable|string|in:Mon,Tue,Wed,Thu,Fri,Sat,Sun';
-            $rules['slot_start_time']  = 'nullable|array';
+            $rules['specialization']  = 'nullable|string|max:255';
+            $rules['experience']      = 'nullable|integer|min:0';
+            $rules['slot_day']        = 'nullable|array';
+            $rules['slot_day.*']      = 'nullable|string|in:Mon,Tue,Wed,Thu,Fri,Sat,Sun';
+            $rules['slot_start_time'] = 'nullable|array';
             $rules['slot_start_time.*'] = 'nullable|string|max:10';
-            $rules['slot_end_time']    = 'nullable|array';
-            $rules['slot_end_time.*']  = 'nullable|string|max:10';
+            $rules['slot_end_time']   = 'nullable|array';
+            $rules['slot_end_time.*'] = 'nullable|string|max:10';
         }
 
         if ($user->role === 'shelter') {
@@ -67,17 +59,30 @@ class ProfileController extends Controller
 
         $validated = $request->validate($rules);
 
-        // Update base user data
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture && $user->profile_picture !== 'default.png') {
+                $oldPath = public_path('storage/user_profiles/' . $user->profile_picture);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            $fileName = uniqid('profile_') . '.' . $request->file('profile_picture')->extension();
+            $request->file('profile_picture')->storeAs('user_profiles', $fileName, 'public');
+
+            $validated['profile_picture'] = $fileName;
+        }
+
         $user->update([
             'name'    => $validated['name'],
             'email'   => $validated['email'],
             'contact' => $validated['contact'] ?? null,
             'address' => $validated['address'] ?? null,
+            'profile_picture' => $validated['profile_picture'] ?? $user->profile_picture,
         ]);
 
-        // Vet-specific updates
+
         if ($user->role === 'vet') {
-            // Reconstruct slots like "Mon 10:00-14:00"
             $days   = $request->input('slot_day', []);
             $starts = $request->input('slot_start_time', []);
             $ends   = $request->input('slot_end_time', []);
@@ -99,7 +104,6 @@ class ProfileController extends Controller
             );
         }
 
-        // Shelter-specific updates
         if ($user->role === 'shelter') {
             $user->shelter()->updateOrCreate(
                 ['shelter_id' => $user->id],
@@ -113,20 +117,26 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.index')->with('success', 'Profile updated successfully!');
     }
-    
+
     public function uploadAvatar(Request $request, $id)
     {
-        $request->validate(['profile_picture' => 'required|image|max:2048']);
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png|max:2048',
+        ]);
+
         $user = User::findOrFail($id);
 
         if ($request->hasFile('profile_picture')) {
-            // Delete old if not default
-            if ($user->profile_picture && $user->profile_picture !== 'user_pictures/default.png') {
-                Storage::disk('public')->delete($user->profile_picture);
+            if ($user->profile_picture) {
+                $oldPath = public_path('storage/user_profiles/' . $user->profile_picture);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
+            $filename = uniqid('profile_') . '.' . $request->file('profile_picture')->getClientOriginalExtension();
 
-            $path = $request->file('profile_picture')->store('user_pictures', 'public');
-            $user->profile_picture = $path;  // e.g., 'avatars/abc.jpg'
+            $request->file('profile_picture')->storeAs('user_profiles', $filename, 'public');
+            $user->profile_picture = $filename;
             $user->save();
         }
 
@@ -137,15 +147,17 @@ class ProfileController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Only delete if it's not the default
-        if ($user->profile_picture !== 'user_pictures/default.png') {
-            Storage::disk('public')->delete($user->profile_picture);
+        if ($user->profile_picture) {
+            $filePath = public_path('storage/user_profiles/' . $user->profile_picture);
+
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            $user->profile_picture = null;
+            $user->save();
         }
 
-        $user->profile_picture = 'user_pictures/default.png';
-        $user->save();
-
-        return back()->with('success', 'Profile picture reset to default.');
+        return back()->with('success', 'Profile picture removed successfully.');
     }
 
     public function updateAvatar(Request $request, $id)
@@ -177,8 +189,22 @@ class ProfileController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+
+        if (Auth::id() !== (int) $id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($user->profile_picture && $user->profile_picture !== 'default.png') {
+            $filePath = public_path('storage/user_profiles/' . $user->profile_picture);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
         Auth::logout();
+
         $user->delete();
-        return redirect('/')->with('success', 'Account deleted.');
+
+        return redirect('/')->with('success', 'Your account has been deleted successfully.');
     }
 }

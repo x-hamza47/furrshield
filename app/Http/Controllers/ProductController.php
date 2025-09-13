@@ -38,9 +38,9 @@ class ProductController extends Controller
             }
         }
         if ($request->filled('price_order')) {
-            $query->orderBy('price', $request->price_order); 
+            $query->orderBy('price', $request->price_order);
         } else {
-            $query->orderBy('id', 'desc'); 
+            $query->orderBy('id', 'desc');
         }
 
         $products = $query->paginate(10)->withQueryString();
@@ -53,7 +53,14 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+
+        if (!in_array($user->role, ['shelter', 'admin'])) {
+            return redirect()->route('products.index')
+                ->with('error', 'You are not authorized to create products.');
+        }
+
+        return view('dashboard.products.create');
     }
 
     /**
@@ -61,7 +68,44 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Only shelters and admins can create products
+        if (!in_array(Auth::user()->role, ['shelter', 'admin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'pro_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        $product = new Product();
+        $product->name = $request->name;
+        $product->category = $request->category;
+        $product->price = $request->price;
+        $product->stock_quantity = $request->stock_quantity;
+        $product->description = $request->description;
+
+        // Assign shelter_id if shelter is logged in
+        if (Auth::user()->role === 'shelter') {
+            $product->shelter_id = Auth::user()->shelter->id;
+        }
+
+        // Handle image upload
+        if ($request->hasFile('pro_img')) {
+            $file = $request->file('pro_img');
+            $extension = $file->extension();
+            $filename = 'product_' . time() . '_' . uniqid() . '.' . $extension;
+            $path = $file->storeAs('products', $filename, 'public');
+            $product->pro_img = $path;
+        }
+
+        $product->save();
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -148,7 +192,7 @@ class ProductController extends Controller
     {
         $user = Auth::user();
 
-   
+
         if (!($user->role === 'admin' || ($user->role === 'shelter' && $product->shelter_id === $user->shelter->id))) {
             return redirect()->route('products.index')
                 ->with('error', 'You are not authorized to delete this product.');

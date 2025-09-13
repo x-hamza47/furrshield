@@ -143,13 +143,19 @@
                     <div data-i18n=" Requests History"> Requests History</div>
                 </a>
             </li>
-
+            <li class="menu-item">
+                <a href="{{ route('orders.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-cart-alt"></i>
+                    <div data-i18n=" Orders"> Orders</div>
+                </a>
+            </li>
             <li class="menu-item {{ Route::is('products.*') ? 'active' : '' }}">
                 <a href="{{ route('products.index') }}" class="menu-link">
                     <i class="menu-icon icon-base bx bx-box"></i>
                     <div data-i18n="Products"> Products</div>
                 </a>
             </li>
+
         @endcan
 
         @can('vet-view')

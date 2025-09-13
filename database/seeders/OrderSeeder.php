@@ -16,9 +16,16 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
+        // Get all owners
         $owners = User::where('role', 'owner')->get();
 
+        // Get all products
         $products = Product::all();
+
+        if ($owners->isEmpty() || $products->isEmpty()) {
+            $this->command->info('No owners or products found, skipping orders seeding.');
+            return;
+        }
 
         foreach ($owners as $owner) {
 
@@ -26,13 +33,14 @@ class OrderSeeder extends Seeder
                 $order = Order::create([
                     'owner_id' => $owner->id,
                     'order_date' => now()->subDays(rand(1, 30)),
-                    'total_amount' => 0, 
+                    'total_amount' => 0,
                     'status' => $this->randomStatus(),
                 ]);
 
                 $total = 0;
 
-                $items = $products->random(rand(1, 4));
+                $items = $products->shuffle()->take(rand(1, 4));
+
                 foreach ($items as $product) {
                     $quantity = rand(1, 3);
                     $priceEach = $product->price;
@@ -47,6 +55,7 @@ class OrderSeeder extends Seeder
                     $total += $priceEach * $quantity;
                 }
 
+                // Update order total
                 $order->update(['total_amount' => $total]);
             }
         }
@@ -54,6 +63,6 @@ class OrderSeeder extends Seeder
 
     private function randomStatus()
     {
-        return collect(['pending', 'completed', 'cancelled'])->random();
+        return collect(['pending', 'cancelled'])->random();
     }
 }

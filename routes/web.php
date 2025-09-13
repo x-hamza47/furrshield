@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\HealthRecordController;
 use App\Http\Controllers\AdoptionRequestController;
-
+use App\Http\Controllers\OrderController;
 
 Route::get('admin', [AuthController::class, 'showLogin'])->name('login')->middleware('IsAuthenticated');
 Route::post('admin/login', [AuthController::class, 'login'])->name('auth.login');
@@ -52,6 +52,7 @@ Route::delete('/dashboard/health-records/pet/{id}', [HealthRecordController::cla
 // Route::resource('products', ProductController::class);
 
 Route::resource('dashboard/products', ProductController::class);
+Route::resource('dashboard/orders', OrderController::class);
 
 
 //! Zain Profile
