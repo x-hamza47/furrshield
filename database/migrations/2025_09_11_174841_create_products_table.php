@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('shelter_id')->nullable()->constrained('shelters')->onDelete('cascade');
+            $table->string('pro_img')->nullable();
             $table->string('name');
             $table->string('category'); 
             $table->decimal('price', 10, 2);

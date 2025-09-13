@@ -15,4 +15,8 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class, 'product_id');
     }
+    public function shelter()
+    {
+        return $this->belongsTo(Shelter::class);
+    }
 }

@@ -50,6 +50,10 @@ Route::delete('/dashboard/health-records/pet/{id}', [HealthRecordController::cla
 // Route::get('dashboard/products', [ProductController::class, 'index'])->name('product.index');
 // Route::post('dashboard/addToCart/{id}', [ProductController::class, 'add'])->name('product.add');
 // Route::resource('products', ProductController::class);
+
+Route::resource('dashboard/products', ProductController::class);
+
+
 //! Zain Profile
 Route::resource('profile', ProfileController::class);
 Route::put('/profile/{id}/avatar', [ProfileController::class, 'uploadAvatar'])->name('profile.uploadAvatar');

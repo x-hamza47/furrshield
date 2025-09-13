@@ -28,8 +28,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AppointmentSeeder::class,
             AdoptionSeeder::class,
+            ProductSeeder::class
         ]);
 
-        Product::factory(15)->create();
+        // Product::factory(15)->create();
     }
 }
